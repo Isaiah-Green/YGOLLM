@@ -54,7 +54,7 @@ Testing
 '''
 tokenizer = Tokenizier()
 cfg = {
-    "vocab_size": tokenizer.encoder.n_vocab,
+    "vocab_size": tokenizer.n_vocab,
     "context_length": 1024,
     "emb_dim": 768,
     "num_heads": 12,
@@ -62,7 +62,7 @@ cfg = {
     "dropout": 0.1,
     "qkv_bias": False
 }
-with open("LM/Auto_Complete_Train_Data.txt", "r", encoding="utf-8") as f:
+with open("yugioh_cards.json", "r", encoding="utf-8") as f:
     text_data = f.read()
 train_ratio = 0.7
 split = int(train_ratio * len(text_data))

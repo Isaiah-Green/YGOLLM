@@ -16,6 +16,9 @@ class Tokenizier:
         if isinstance(text, list):
             text = " ".join(text)
         return self.tokenizer.encode(text)
+    @property
+    def n_vocab(self):
+        return self.tokenizer.n_vocab
 '''
 Testing 
 import sys

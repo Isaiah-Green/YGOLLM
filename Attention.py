@@ -46,7 +46,6 @@ class Attention(nn.Module):
         return context_vector
 '''
 Testing 
-'''
 inputs = torch.tensor([[.5 ,.2 , .3 , .4],
            [.5 , .6 , .7 , .8],
            [.4 , .6 , .2 ,.8 ],
@@ -65,3 +64,4 @@ qkv_bias = False
 mha = Attention(d_in, d_out, context_legnth, num_heads , dropout, qkv_bias)
 c_v = mha(batch)
 print(c_v) 
+'''
