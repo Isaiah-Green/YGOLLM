@@ -1,0 +1,7 @@
+Tokenize 
+Embedd
+Attention
+dataloading
+train and val loading
+pretraining 
+finetuning

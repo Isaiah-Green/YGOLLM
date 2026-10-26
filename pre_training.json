@@ -1,0 +1,8 @@
+{
+    "Name": "The Last Raider",
+    "Level": "2",
+    "Type": "Fiend/Effect",
+    "Effect": "etc",
+    "Atk": "2500",
+    "Def": "2100"
+}
