@@ -18,9 +18,6 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
             optimizer.step()
             tokens_seen += input_batch.numel()
             global_step +=1
-            '''
-            Testing
-            '''
             #evaluate
             if global_step % eval_freq == 0:
                 train_losses, val_losses = evaluate_model(model, train_loader, value_loader,device, eval_iter)
@@ -28,7 +25,7 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
                 train_loss.append(train_losses)
                 val_loss.append(val_losses)
                 track_tokens_seen.append(tokens_seen)
-                start_context = ["Hello , IM feeling a bit ", "Do you want to come with", "No way !, i cant beleive you", " Sorry i was in the "]
+                start_context = ["{", "{", "}", "}"]
                 t = random.randint(0,3)
                 y = start_context[t].split()
                 print(f"{epoch + 1} (Step {global_step:06d}):" f"Train loss {train_losses:.3f}, Val loss {val_losses:.3f}")
@@ -81,3 +78,4 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005,weight_decay=0.1)
 num_epochs = 10
 t = random.randint(0,3)
 train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq,start_context[t])
+torch.save(model.state_dict(),'Pre_trained_Weights.pth')
