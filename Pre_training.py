@@ -10,7 +10,6 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
     tokens_seen,global_step = 0,-1
     for epoch in range(num_epochs):
         model.train()
-
         for input_batch, target_batch in train_loader:
             optimizer.zero_grad()
             loss = calc_loss_batch(input_batch,target_batch,model,device)
@@ -32,8 +31,7 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
                 for step in range(1, len(y) + 1):
                     part = " ".join(y[:step])
                     Generate_output_and_print(model,tokenizer,part,device)
-                
-
+            
 '''
 Testing 
 '''

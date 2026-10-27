@@ -1,4 +1,5 @@
-[
+{
+    "Cards": [
     {
         "Name": "Absolute Crusader",
         "Level": "4",
@@ -120720,3 +120721,4 @@
         "Def": "1700"
     }
 ]
+}
