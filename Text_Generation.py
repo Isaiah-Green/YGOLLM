@@ -15,18 +15,19 @@ def To_ouput(tokenizer , tokens):
     decode = tokens.squeeze(0)
     return tokenizer.decodes(decode.tolist())
 
-def Generate_output_highest(model,idx, max_new_tokens, context_size):
+def Generate_output_highest(model,tokenizer,idx, max_new_tokens, context_size):
     for _ in range(max_new_tokens):
         idx_cond = idx[:, -context_size:]
         with torch.no_grad():
             logits = model(idx_cond)
-        logits = logits[:, -1, :]# gets last row
+        logits = logits[:, -1, :] / 0.6# gets last row and diveds by temp of 0.6
         probability = torch.softmax(logits, dim=-1)
         # use argmax to get highest index value
         idx_next = torch.argmax(probability, dim=-1, keepdim=True)
         top_k_prob, top_k_index = torch.topk(probability, k=3, dim=-1)
+        if (idx_next == tokenizer.end_token()):
+            break
         idx = torch.cat((idx, idx_next), dim=-1)
-
     return idx, top_k_index
 
 def Generate_output_and_print(model, tokenizer, start_context, device):
@@ -34,7 +35,7 @@ def Generate_output_and_print(model, tokenizer, start_context, device):
     context_size = model.pos_embedding.weight.shape[0]
     encoded = torch.tensor(tokenizer.encode(start_context)).unsqueeze(0)
     with torch.no_grad():
-        token_ids,top_k = Generate_output_highest(model,idx=encoded,max_new_tokens=256, context_size=context_size)
+        token_ids,top_k = Generate_output_highest(model,tokenizer,idx=encoded,max_new_tokens=256, context_size=context_size)
     #top_k = top_k.unsqueeze(0)
     decoded_top_k = To_ouput(tokenizer, top_k[0])
     decode = To_ouput(tokenizer, token_ids)

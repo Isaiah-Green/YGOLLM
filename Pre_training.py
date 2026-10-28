@@ -5,7 +5,8 @@ from Loss import calculate_loss, calc_loss_batch
 from Loaders import Dataloader
 import torch
 import random
-def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, tokenizer, num_epochs, eval_iter, eval_freq,start_context):
+from Name_Graber_for_training import set_name_array, get_random_name
+def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, tokenizer, num_epochs, eval_iter, eval_freq):
     train_loss , val_loss,track_tokens_seen = [],[],[]
     tokens_seen,global_step = 0,-1
     for epoch in range(num_epochs):
@@ -24,9 +25,9 @@ def Train_Model_on_input(model, train_loader, value_loader, optimizer, device, t
                 train_loss.append(train_losses)
                 val_loss.append(val_losses)
                 track_tokens_seen.append(tokens_seen)
-                start_context = ["{", "{", "}", "}"]
-                t = random.randint(0,3)
-                y = start_context[t].split()
+                start_context = set_name_array()
+                y = get_random_name(start_context)
+                y = y.split()
                 print(f"{epoch + 1} (Step {global_step:06d}):" f"Train loss {train_losses:.3f}, Val loss {val_losses:.3f}")
                 for step in range(1, len(y) + 1):
                     part = " ".join(y[:step])
@@ -57,7 +58,7 @@ cfg = {
     "dropout": 0.1,
     "qkv_bias": False
 }
-with open("yugioh_cards.json", "r", encoding="utf-8") as f:
+with open("yugioh_cards.txt", "r", encoding="utf-8") as f:
     text_data = f.read()
 train_ratio = 0.7
 split = int(train_ratio * len(text_data))
@@ -69,11 +70,10 @@ val_loader = Dataloader(val_data)
 
 model = Model(cfg)
 tokenizer = Tokenizier()
-start_context = ["Hello , IM feeling a bit ", "Do you want to come with", "No way ! , i cant beleive you", "Sorry i was in the "]
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-optimizer = torch.optim.AdamW(model.parameters(), lr=0.0005,weight_decay=0.1)
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.00001,weight_decay=0.1)
 num_epochs = 10
 t = random.randint(0,3)
-train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq,start_context[t])
+train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq)
 torch.save(model.state_dict(),'Pre_trained_Weights.pth')

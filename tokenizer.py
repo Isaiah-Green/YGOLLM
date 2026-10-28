@@ -3,6 +3,7 @@ import torch
 class Tokenizier:
     def __init__(self):
         self.tokenizer = tiktoken.get_encoding("cl100k_base") # tokenizer
+        self.special_end_token  = "<|endoftext|>"
     def decodes(self, text):
         if hasattr(text, "tolist"):
             text = text.tolist()
@@ -15,7 +16,10 @@ class Tokenizier:
             text = text.cpu().numpy().tolist()  
         if isinstance(text, list):
             text = " ".join(text)
-        return self.tokenizer.encode(text)
+        return self.tokenizer.encode(text , allowed_special={"<|endoftext|>"})
+    def end_token(self):
+        end_token = self.encode(self.special_end_token)[0]
+        return end_token
     @property
     def n_vocab(self):
         return self.tokenizer.n_vocab
