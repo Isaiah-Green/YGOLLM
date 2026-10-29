@@ -7,7 +7,7 @@ class Model(nn.Module):
         super().__init__()
         self.embedding = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
         self.pos_embedding = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
-        self.logits = nn.Linear(cfg["emb_dim"], cfg["vocab_size"])
+        self.logits = nn.Linear(cfg["emb_dim"], cfg["vocab_size"], bias=False)
         self.Transformer = nn.Sequential(
             *[TransformerBlock(cfg) for _ in range (cfg["n_layers"])]
         )

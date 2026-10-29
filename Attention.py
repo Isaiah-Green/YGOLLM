@@ -2,12 +2,13 @@ import torch
 import torch.nn as nn
 
 class Attention(nn.Module):
-    def __init__(self, d_in, d_out, context_length, num_heads=2, dropout=0.0, qkv_bias=False):
+    def __init__(self, d_in, d_out, context_length, num_heads=2, dropout=0.0, qkv_bias=True):
         super().__init__()
         assert(d_out % num_heads == 0), "dimentionality Must be divisbale by the number of heads"
         self.d_out = d_out
         self.num_heads = num_heads
         self.heads_dim = d_out // num_heads
+        self.register_buffer("mask", torch.triu(torch.ones(context_length, context_length), diagonal=1))
         self.weight_q = torch.nn.Linear(d_in , d_out, bias=qkv_bias)
         self.weight_k = torch.nn.Linear(d_in , d_out, bias=qkv_bias)
         self.weight_v = torch.nn.Linear(d_in , d_out, bias=qkv_bias)
@@ -34,14 +35,16 @@ class Attention(nn.Module):
         ## caluculating attn_scores (keys go format c)
         attention_score = queries @ keys.transpose(2,3)
         #mask
+        mask = self.mask.bool()[:number_tokens, :number_tokens]
+        attention_score = attention_score.masked_fill(mask, -torch.inf)
         ## after this annt_wieghts is in format c
-        attention_weights = torch.softmax(attention_score / keys.shape[-1], dim= 1)
+        attention_weights = torch.softmax(attention_score / keys.shape[-1]**0.5, dim=-1)
         attention_weights = self.dropout(attention_weights)
         ##(annt_wieghts put matrix in format d) then transpose puts bac k in format a)
         context_vector = (attention_weights @ values).transpose(1,2)
         ##match desired output dimentions using reshape (keep values same jsut change shape)
         context_vector = context_vector.reshape(b, number_tokens, self.d_out)
-        context_vector - self.out_projection(context_vector)
+        context_vector = self.out_projection(context_vector)
 
         return context_vector
 '''

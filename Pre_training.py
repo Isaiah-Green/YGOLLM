@@ -1,5 +1,7 @@
 from tokenizer import Tokenizier
 from Model import Model
+from gpt_download import download_and_load_gpt2
+from copy_gpt_weights import assign, load_weights_into_gpt
 from Text_Generation import To_token,To_ouput,Generate_output_and_print,Generate_output_highest
 from Loss import calculate_loss, calc_loss_batch
 from Loaders import Dataloader
@@ -50,13 +52,13 @@ Testing
 '''
 tokenizer = Tokenizier()
 cfg = {
-    "vocab_size": tokenizer.n_vocab,
+    "vocab_size": 50257,
     "context_length": 1024,
     "emb_dim": 768,
     "num_heads": 12,
     "n_layers": 12,
-    "dropout": 0.1,
-    "qkv_bias": False
+    "dropout": 0.0,
+    "qkv_bias": True
 }
 with open("yugioh_cards.txt", "r", encoding="utf-8") as f:
     text_data = f.read()
@@ -69,11 +71,12 @@ train_loader = Dataloader(train_data)
 val_loader = Dataloader(val_data)
 
 model = Model(cfg)
+settings, params = download_and_load_gpt2(model_size="124M", models_dir="gpt2")
+load_weights_into_gpt(model,params)
 tokenizer = Tokenizier()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.00001,weight_decay=0.1)
 num_epochs = 10
-t = random.randint(0,3)
 train_loss, val_loss, tokens_seen = Train_Model_on_input(model,train_loader,val_loader,optimizer,device,tokenizer,num_epochs,eval_iter,eval_freq)
 torch.save(model.state_dict(),'Pre_trained_Weights.pth')

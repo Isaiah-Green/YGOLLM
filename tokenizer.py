@@ -2,7 +2,7 @@ import tiktoken
 import torch
 class Tokenizier:
     def __init__(self):
-        self.tokenizer = tiktoken.get_encoding("cl100k_base") # tokenizer
+        self.tokenizer = tiktoken.get_encoding("gpt2") # tokenizer
         self.special_end_token  = "<|endoftext|>"
     def decodes(self, text):
         if hasattr(text, "tolist"):
